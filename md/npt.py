@@ -139,7 +139,7 @@ class NPT(MolecularDynamics):
 
     def __init__(self, atoms,
                  timestep, temperature, externalstress, ttime, pfactor,
-                 mask=None, trajectory=None, logfile=None, loginterval=1,
+                 wrap=True, mask=None, trajectory=None, logfile=None, loginterval=1, ## YJ
                  append_trajectory=False):
 
         MolecularDynamics.__init__(self, atoms, timestep, trajectory,
@@ -157,6 +157,7 @@ class NPT(MolecularDynamics):
         self.initialized = 0
         self.ttime = ttime
         self.pfactor_given = pfactor
+        self.wrap = wrap
         self._calculateconstants()
         self.timeelapsed = 0.0
         self.frac_traceless = 1
@@ -283,6 +284,8 @@ class NPT(MolecularDynamics):
         # h must be equal to self.atoms.GetUnitCell()
         #
         # print "Making a timestep"
+        if self.wrap: ## YJ
+            self.atoms.wrap(eps=0.) ## YJ
         dt = self.dt
         h_future = self.h_past + 2 * dt * np.dot(self.h, self.eta)
         if self.pfactor_given is None:

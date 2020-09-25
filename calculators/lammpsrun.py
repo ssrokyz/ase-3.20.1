@@ -119,7 +119,7 @@ potentials)
     ase_parameters: Dict[str, Any] = dict(
         specorder=None,
         always_triclinic=False,
-        keep_alive=True,
+        keep_alive=False,
         keep_tmp_files=False,
         no_data_file=False,
         tmp_dir=None,

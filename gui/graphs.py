@@ -8,6 +8,7 @@ import ase.gui.ui as ui
 
 graph_help_text = _("""\
 Symbols:
+<c>np</c>: numpy object
 <c>e</c>: total energy
 <c>epot</c>: potential energy
 <c>ekin</c>: kinetic energy
@@ -74,6 +75,8 @@ class Graphs:
 
 def make_plot(data, i, expr, type, show=True):
     import matplotlib.pyplot as plt
+    font = {'family':'Arial'} ## YJ
+    plt.rc('font', **font) ## YJ
     basesize = 4
     plt.figure(figsize=(basesize * 2.5**0.5, basesize))
     m = len(data)
@@ -86,13 +89,17 @@ def make_plot(data, i, expr, type, show=True):
 
     if type == 'y':
         for j in range(m):
-            plt.plot(data[j])
-            plt.plot([i], [data[j, i]], 'o')
+            plt.plot(data[j], c='k') ## YJ
+            plt.plot([i], [data[j, i]], 'o', markersize=5, c='navy') ## YJ
     else:
         for j in range(1, m):
-            plt.plot(data[0], data[j])
-            plt.plot([data[0, i]], [data[j, i]], 'o')
-    plt.title(expr)
+            plt.plot(data[0], data[j], c='k') ## YJ
+            plt.plot([data[0, i]], [data[j, i]], 'o', markersize=5, c='navy') ## YJ
+    plt.xticks(fontsize='x-large')
+    plt.yticks(fontsize='x-large')
+    plt.tick_params(axis="both",direction="in", labelsize='x-large')
+    plt.title(expr, fontsize='x-large')
+    plt.grid(alpha=0.2)
     if show:
         plt.show()
 

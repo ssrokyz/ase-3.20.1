@@ -6,7 +6,7 @@ from ase.parallel import paropen
 from ase.calculators.lammps import Prism, convert
 
 
-def read_lammps_data(fileobj, Z_of_type=None, style="full",
+def read_lammps_data(fileobj, Z_of_type=None, style="atomic", ## YJ
                      sort_by_id=False, units="metal"):
     """Method which reads a LAMMPS data file.
 
@@ -407,7 +407,7 @@ def read_lammps_data(fileobj, Z_of_type=None, style="full",
 
 
 def write_lammps_data(fileobj, atoms, specorder=None, force_skew=False,
-                      prismobj=None, velocities=False, units="metal",
+                      prismobj=None, velocities=True, units="metal", ## YJ
                       atom_style='atomic'):
     """Write atomic structure data to a LAMMPS data file."""
     if isinstance(fileobj, str):

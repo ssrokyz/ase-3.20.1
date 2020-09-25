@@ -18,14 +18,15 @@ class ColorWindow:
         self.gui = gui
         self.win.add(ui.Label(_('Choose how the atoms are colored:')))
         values = ['jmol', 'tag', 'force', 'velocity',
-                  'initial charge', 'magmom', 'neighbors']
+                  'initial charge', 'magmom', 'neighbors', 'energies'] # YJ
         labels = [_('By atomic number, default "jmol" colors'),
                   _('By tag'),
                   _('By force'),
                   _('By velocity'),
                   _('By initial charge'),
                   _('By magnetic moment'),
-                  _('By number of neighbors'), ]
+                  _('By number of neighbors'),
+                  _('By potential energies'), ] # YJ
 
         haveit = ['numbers', 'positions', 'forces', 'momenta',
                   'initial_charges', 'initial_magmoms']
@@ -66,11 +67,13 @@ class ColorWindow:
         # XXX not sure how to deal with some images having forces,
         # and other images not.  Same goes for below quantities
         F = images.get_forces(atoms)
+        energies = images.get_potential_energies(atoms) ## YJ
         radio['force'].active = F is not None
         radio['velocity'].active = atoms.has('momenta')
         radio['initial charge'].active = atoms.has('initial_charges')
         radio['magmom'].active = get_magmoms(atoms).any()
         radio['neighbors'].active = True
+        radio['energies'].active = energies is not None ## YJ
 
     def toggle(self, value):
         self.gui.colormode = value
@@ -103,6 +106,7 @@ class ColorWindow:
 
             try:
                 unit = {'tag': '',
+                        'energies': 'eV', ## YJ
                         'force': 'eV/Ang',
                         'velocity': '(eV/amu)^(1/2)',
                         'charge': '|e|',

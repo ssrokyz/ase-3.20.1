@@ -70,6 +70,14 @@ class Images:
         else:
             return F
 
+    def get_potential_energies(self, atoms): ## YJ start
+        try:
+            energies = atoms.get_potential_energies()
+        except RuntimeError:
+            return None
+        else:
+            return energies ## YJ end
+
     def initialize(self, images, filenames=None):
         nimages = len(images)
         if filenames is None:
@@ -344,7 +352,7 @@ class Images:
 
         # Namespace for eval:
         ns = {'E': E,
-              'd': d, 'a': a, 'dih': dih}
+              'd': d, 'a': a, 'dih': dih, 'np':np} ## YJ
 
         data = []
         for i in range(nimages):

@@ -307,7 +307,7 @@ F('iwm', '?', '1F', glob='atoms.dat'),
 F('json', 'ASE JSON database file', '+F', module='db'),
 F('jsv', 'JSV file format', '1F'),
 F('lammps-dump-text', 'LAMMPS text dump file', '+F',
-  module='lammpsrun', magic=b'*\nITEM: TIMESTEP\n'),
+  module='lammpsrun', magic=b'ITEM: TIMESTEP\n'), ## YJ
 F('lammps-dump-binary', 'LAMMPS binary dump file', '+B',
   module='lammpsrun')
 F('lammps-data', 'LAMMPS data file', '1F', module='lammpsdata',
@@ -640,8 +640,11 @@ def read(
     if isinstance(index, (slice, str)):
         return list(_iread(filename, index, format, io, parallel=parallel,
                            **kwargs))
-    else:
+    elif index==-1:
         return next(_iread(filename, slice(index, None), format, io,
+                           parallel=parallel, **kwargs))
+    else:
+        return next(_iread(filename, slice(index, index+1), format, io,
                            parallel=parallel, **kwargs))
 
 

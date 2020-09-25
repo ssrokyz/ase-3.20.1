@@ -117,7 +117,9 @@ def compare_atoms(atoms1, atoms2, tol=1e-15, excluded_properties=None):
 
 
 all_properties = ['energy', 'forces', 'stress', 'stresses', 'dipole',
-                  'charges', 'magmom', 'magmoms', 'free_energy', 'energies']
+                  'charges', 'magmom', 'magmoms', 'free_energy', 'energies',
+                  'e_coulomb', 'e_alpha_z', 'e_ewald', 'e_hartree', 'e_exchange', 'e_vxc_exc', 'e_vdw',
+                  'e_paw_double', 'e_paw_double1', 'e_paw_double2', 'e_t_s', 'e_eigen', 'e_atomic', 'e_solv'] ## YJ
 
 
 all_changes = ['positions', 'numbers', 'cell', 'pbc',

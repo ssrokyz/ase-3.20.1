@@ -151,13 +151,13 @@ def read_vasp(filename='CONTCAR'):
     # Check whether we have a VASP 4.x or 5.x format file. If the
     # format is 5.x, use the fifth line to provide information about
     # the atomic symbols.
-    vasp5 = False
-    try:
-        int(numofatoms[0])
-    except ValueError:
-        vasp5 = True
-        atomtypes = numofatoms
-        numofatoms = fd.readline().split()
+    # vasp5 = False
+    # try:
+        # int(numofatoms[0])
+    # except ValueError:
+    vasp5 = True
+    atomtypes = numofatoms
+    numofatoms = fd.readline().split()
 
     # check for comments in numofatoms line and get rid of them if necessary
     commentcheck = np.array(['!' in s for s in numofatoms])
@@ -289,6 +289,10 @@ def _read_outcar_frame(lines, header_data):
     f_n = np.zeros(nbands)  # kpt occupations
     eps_n = np.zeros(nbands)  # kpt eigenvalues
 
+    ## YJ (ss potential purpose)
+    save_e_detail = False
+    save_e_vdw = False
+
     # Parse each atoms object
     for n, line in enumerate(lines):
         line = line.strip()
@@ -409,6 +413,40 @@ def _read_outcar_frame(lines, header_data):
                                                   stress=stress)
             atoms.calc.name = 'vasp'
             atoms.calc.kpts = kpts
+
+            ## YJ (ss potential purpose)
+            if save_e_detail:
+                atoms.calc.results['e_alpha_z'] = e_alpha_z 
+                atoms.calc.results['e_ewald'] = e_ewald
+                atoms.calc.results['e_hartree'] = e_hartree 
+                atoms.calc.results['e_exchange'] = e_exchange
+                atoms.calc.results['e_vxc_exc'] = e_vxc_exc 
+                atoms.calc.results['e_paw_double1'] = e_paw_double1 
+                atoms.calc.results['e_paw_double2'] = e_paw_double2
+                atoms.calc.results['e_t_s'] = e_t_s 
+                atoms.calc.results['e_eigen'] = e_eigen 
+                atoms.calc.results['e_atomic'] = e_atomic 
+                atoms.calc.results['e_solv'] = e_solv 
+            if save_e_vdw:
+                atoms.calc.results['e_vdw'] = e_vdw
+
+        ## YJ (ss potential purpose)
+        elif 'Free energy of the ion-electron system (eV)' in line:
+            e_alpha_z  = float(lines[n + 2].split()[4])
+            e_ewald    = float(lines[n + 3].split()[4])
+            e_hartree  = float(lines[n + 4].split()[4])
+            e_exchange = float(lines[n + 5].split()[3])
+            e_vxc_exc  = float(lines[n + 6].split()[3])
+            e_paw_double1, e_paw_double2 = map(float, lines[n + 7].split()[4:6])
+            e_t_s      = float(lines[n + 8].split()[4])
+            e_eigen    = float(lines[n + 9].split()[3])
+            e_atomic   = float(lines[n + 10].split()[4])
+            e_solv     = float(lines[n + 11].split()[3])
+            save_e_detail = True
+        elif 'Edisp (eV)' in line:
+            e_vdw = float(lines[n].split()[2])
+            save_e_vdw = True
+
     return atoms
 
 
