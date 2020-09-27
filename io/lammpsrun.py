@@ -341,6 +341,8 @@ def read_lammps_dump_text(fileobj, index=-1, **kwargs):
                 lines = lines_tot[i*(n_atoms+9):(i+1)*(n_atoms+9)]
             # Read images.
             images.append(read_a_loop(deque(lines), n_atoms, **kwargs))
+            if len(images) % 1000 == 0:
+                print('{}-th system is read from lammps-dump-text file.'.format(i+1))
             # Break if it is done.
             if len(images) == max_img_len:
                 break
