@@ -144,7 +144,9 @@ def phonon_harmonics(
     force_constants,
     masses,
     temp,
+    eigen_set=None,
     rng=np.random.rand,
+    seed=None,
     quantum=False,
     plus_minus=False,
     return_eigensolution=False,
@@ -156,12 +158,15 @@ def phonon_harmonics(
 
     force_constants: array of size 3N x 3N
         force constants (Hessian) of the system in eV/Å²
+        This can be set None, only if eigen_set is provided.
     masses: array of length N
         masses of the structure in amu
     temp: float
         Temperature converted to eV (T * units.kB)
     rng: function
         Random number generator function, e.g., np.random.rand
+    seed: int
+        Random number generator seed for np.random.rand.
     quantum: bool
         True for Bose-Einstein distribution, False for Maxwell-Boltzmann
         (classical limit)
@@ -216,12 +221,14 @@ def phonon_harmonics(
     Reference: [West, Estreicher; PRL 96, 22 (2006)]
     """
 
-    # Build dynamical matrix
-    rminv = (masses ** -0.5).repeat(3)
-    dynamical_matrix = force_constants * rminv[:, None] * rminv[None, :]
-
-    # Solve eigenvalue problem to compute phonon spectrum and eigenvectors
-    w2_s, X_is = np.linalg.eigh(dynamical_matrix)
+    if eigen_set:
+        (w2_s, X_is) = eigen_set
+    else:
+        # Build dynamical matrix
+        rminv = (masses ** -0.5).repeat(3)
+        dynamical_matrix = force_constants * rminv[:, None] * rminv[None, :]
+        # Solve eigenvalue problem to compute phonon spectrum and eigenvectors
+        w2_s, X_is = np.linalg.eigh(dynamical_matrix)
 
     # Check for soft modes
     if failfast:
@@ -265,6 +272,11 @@ def phonon_harmonics(
         # Create velocities und displacements from the amplitudes and
         # eigenvectors
         A_s *= spread
+        if seed:
+            if rng is not np.random.rand:
+                raise NotImplementedError('Seed option is only for np.random function.')
+            else:
+                np.random.seed(seed)
         phi_s = 2.0 * np.pi * rng(nw)
 
         # Assign velocities, sqrt(2) compensates for missing sin(phi) in
@@ -282,10 +294,20 @@ def phonon_harmonics(
         # to avoid (highly improbable) NaN.
 
         # Box Muller [en.wikipedia.org/wiki/Box–Muller_transform]:
+        if seed:
+            if rng is not np.random.rand:
+                raise NotImplementedError('Seed option is only for np.random function.')
+            else:
+                np.random.seed(seed)
         spread = np.sqrt(-2.0 * np.log(1.0 - rng(nw)))
 
         # assign amplitudes and phases
         A_s *= spread
+        if seed:
+            if rng is not np.random.rand:
+                raise NotImplementedError('Seed option is only for np.random function.')
+            else:
+                np.random.seed(seed)
         phi_s = 2.0 * np.pi * rng(nw)
 
         # Assign velocities and displacements
